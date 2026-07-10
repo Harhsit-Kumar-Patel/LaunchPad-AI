@@ -1,0 +1,194 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--panel);
+  --color-card-foreground: var(--panel-foreground);
+  --color-popover: var(--panel);
+  --color-popover-foreground: var(--panel-foreground);
+  --color-primary: var(--accent);
+  --color-primary-foreground: var(--accent-foreground);
+  --color-secondary: var(--muted);
+  --color-secondary-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: #991b1b;
+  --color-destructive-foreground: #fef2f2;
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-input: var(--muted);
+  --color-ring: var(--accent);
+  
+  --radius-lg: 0px;
+  --radius-md: 0px;
+  --radius-sm: 0px;
+}
+
+:root {
+  --background: #F9F6F0; /* Soft warm off-white background */
+  --foreground: #0A0A0C; /* High-contrast charcoal text */
+  
+  --panel: rgba(255, 255, 255, 0.7); /* Translucent White Glass */
+  --panel-foreground: #0A0A0C;
+  
+  --accent: #1A4BFF; /* LaunchPad Blue */
+  --accent-foreground: #FFFFFF;
+  
+  --muted: rgba(26, 75, 255, 0.03); /* Light blue glass tint */
+  --muted-foreground: #4A4E69; /* Slate gray text for subheadings (high contrast) */
+  
+  --border: rgba(0, 0, 0, 0.08); /* Delicate dark glass border outline */
+  --border-strong: rgba(0, 0, 0, 0.16);
+
+  --bg-grid-color: rgba(0, 0, 0, 0.03);
+  --bg-glow-1: rgba(26, 75, 255, 0.05);
+  --bg-glow-2: rgba(157, 78, 221, 0.04);
+  --bg-glow-3: rgba(0, 240, 255, 0.02);
+
+  --text-gradient-start: #0a0a0c;
+  --text-gradient-mid: #6d28d9;
+  --text-gradient-end: #0284c7;
+
+  --shadow-blue: 0 8px 30px rgba(26, 75, 255, 0.06), 0 0 15px rgba(26, 75, 255, 0.02);
+  --shadow-violet: 0 8px 30px rgba(157, 78, 221, 0.06), 0 0 15px rgba(157, 78, 221, 0.02);
+  --shadow-cyan: 0 8px 30px rgba(2, 132, 199, 0.06), 0 0 15px rgba(2, 132, 199, 0.02);
+  --shadow-green: 0 8px 30px rgba(16, 185, 129, 0.06), 0 0 15px rgba(16, 185, 129, 0.02);
+  --shadow-amber: 0 8px 30px rgba(245, 158, 11, 0.06), 0 0 15px rgba(245, 158, 11, 0.02);
+
+  --shadow-hard-color-sm: rgba(26, 75, 255, 0.2);
+  --shadow-hard-color-md: rgba(157, 78, 221, 0.15);
+  --shadow-hard-color-lg: rgba(2, 132, 199, 0.15);
+}
+
+.dark {
+  --background: #030307; /* Deep cosmic space black */
+  --foreground: #F1EFEA; /* Editorial off-white */
+  
+  --panel: rgba(8, 9, 23, 0.65); /* Translucent Obsidian Glass */
+  --panel-foreground: #F1EFEA;
+  
+  --accent: #1A4BFF; /* LaunchPad Blue */
+  --accent-foreground: #FFFFFF;
+  
+  --muted: rgba(20, 22, 54, 0.4); /* Muted glass blue */
+  --muted-foreground: #7E82B2;
+  
+  --border: rgba(255, 255, 255, 0.08); /* Minimal white glass border */
+  --border-strong: rgba(255, 255, 255, 0.16);
+
+  --bg-grid-color: rgba(255, 255, 255, 0.015);
+  --bg-glow-1: rgba(26, 75, 255, 0.12);
+  --bg-glow-2: rgba(157, 78, 221, 0.08);
+  --bg-glow-3: rgba(0, 240, 255, 0.04);
+
+  --text-gradient-start: #ffffff;
+  --text-gradient-mid: #9d4edd;
+  --text-gradient-end: #00f0ff;
+
+  --shadow-blue: 0 0 20px rgba(26, 75, 255, 0.15);
+  --shadow-violet: 0 0 20px rgba(157, 78, 221, 0.15);
+  --shadow-cyan: 0 0 20px rgba(0, 240, 255, 0.15);
+  --shadow-green: 0 0 20px rgba(0, 245, 160, 0.15);
+  --shadow-amber: 0 0 20px rgba(255, 183, 3, 0.15);
+
+  --shadow-hard-color-sm: rgba(26, 75, 255, 0.4);
+  --shadow-hard-color-md: rgba(157, 78, 221, 0.3);
+  --shadow-hard-color-lg: rgba(0, 240, 255, 0.3);
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-feature-settings: "rlig" 1, "calt" 1;
+  font-family: var(--font-geist-sans), Inter, system-ui, sans-serif;
+  
+  /* Dynamic dot grid and ambient glows based on active theme variables */
+  background-image: 
+    radial-gradient(var(--bg-grid-color) 1.5px, transparent 1.5px),
+    radial-gradient(at 0% 0%, var(--bg-glow-1) 0px, transparent 40%),
+    radial-gradient(at 100% 100%, var(--bg-glow-2) 0px, transparent 40%),
+    radial-gradient(at 50% 50%, var(--bg-glow-3) 0px, transparent 50%);
+  background-size: 24px 24px, 100% 100%, 100% 100%, 100% 100%;
+  background-attachment: fixed;
+}
+
+/* Glassmorphism Styles */
+.glass-panel {
+  background-color: var(--panel);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.04);
+}
+
+/* Dynamic Gradient Typography */
+.text-gradient-primary {
+  background: linear-gradient(135deg, var(--text-gradient-start) 30%, var(--text-gradient-mid) 70%, var(--text-gradient-end) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.text-gradient-cyber {
+  background: linear-gradient(135deg, var(--text-gradient-start) 20%, var(--text-gradient-mid) 65%, var(--text-gradient-end) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Glowing Neon Shadows (Swaps dynamically between Light/Dark variables) */
+.shadow-glow-blue {
+  box-shadow: var(--shadow-blue);
+}
+
+.shadow-glow-violet {
+  box-shadow: var(--shadow-violet);
+}
+
+.shadow-glow-cyan {
+  box-shadow: var(--shadow-cyan);
+}
+
+.shadow-glow-green {
+  box-shadow: var(--shadow-green);
+}
+
+.shadow-glow-amber {
+  box-shadow: var(--shadow-amber);
+}
+
+/* Fallbacks & Defaults matching sharp brutalism */
+.shadow-hard-sm {
+  box-shadow: 2px 2px 0px 0px var(--shadow-hard-color-sm);
+}
+.shadow-hard-md {
+  box-shadow: 4px 4px 0px 0px var(--shadow-hard-color-md);
+}
+.shadow-hard-lg {
+  box-shadow: 6px 6px 0px 0px var(--shadow-hard-color-lg);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 0px;
+}
+.dark ::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.2);
+}
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
