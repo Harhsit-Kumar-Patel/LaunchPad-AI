@@ -18,6 +18,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 import { MOCK_TRANSCRIPT_EXAMPLES } from "@/constants";
 
 interface TranscriptInputProps {
@@ -51,6 +52,7 @@ export function TranscriptInput({ onAnalyze, loading }: TranscriptInputProps) {
   }, [wordCount]);
 
   const isValidInput = title.trim() !== "" && transcript.trim() !== "";
+  const showTitleWarning = transcript.trim() !== "" && title.trim() === "";
 
   // Handle manual submit
   const handleSubmit = async (e: React.FormEvent) => {
@@ -199,8 +201,18 @@ Designer: We also need custom alert UI templates in settings. Let's aim to draft
                 placeholder="e.g. Billing Sync, Auth Architecture Review"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="bg-black/30 border border-white/10 focus:border-[#00F0FF]/50 focus:shadow-[0_0_10px_rgba(0,240,255,0.15)] text-foreground h-10 text-xs rounded-none transition-all"
+                className={cn(
+                  "bg-black/30 border text-foreground h-10 text-xs rounded-none transition-all focus:shadow-[0_0_10px_rgba(0,240,255,0.15)]",
+                  showTitleWarning 
+                    ? "border-amber-500/50 focus:border-amber-500" 
+                    : "border-white/10 focus:border-[#00F0FF]/50"
+                )}
               />
+              {showTitleWarning && (
+                <p className="text-[9px] text-amber-400 font-mono tracking-wide uppercase select-none animate-pulse">
+                  &bull; Please enter a title to enable analysis
+                </p>
+              )}
             </div>
 
             {/* File Drag-and-Drop Area */}
@@ -307,7 +319,7 @@ Developer: We'll need webhook handlers to record payment failures..."
         </Card>
 
         {/* Bottom Action Bar */}
-        <div className="flex items-center justify-between gap-4 p-4 border border-white/10 bg-[#08091E]/40 backdrop-blur-xl rounded-none shadow-[0_0_20px_rgba(0,0,0,0.3)] select-none">
+        <div className="sticky bottom-0 z-20 flex items-center justify-between gap-4 p-4 border border-white/10 bg-[#050614]/90 backdrop-blur-xl rounded-none shadow-[0_-10px_25px_rgba(0,0,0,0.5)] select-none">
           <button
             type="button"
             onClick={handleClear}
