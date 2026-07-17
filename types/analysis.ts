@@ -120,6 +120,109 @@ export const AIServiceResponseSchema = z.object({
 
 export type AIServiceResponse = z.infer<typeof AIServiceResponseSchema>;
 
+export const geminiResponseSchema = {
+  type: "OBJECT",
+  properties: {
+    summary: {
+      type: "OBJECT",
+      properties: {
+        executiveSummary: { type: "STRING" },
+        meetingObjective: { type: "STRING" },
+        businessContext: { type: "STRING" },
+        keyOutcomes: { type: "ARRAY", items: { type: "STRING" } }
+      },
+      required: ["executiveSummary", "meetingObjective", "businessContext", "keyOutcomes"]
+    },
+    keyDecisions: {
+      type: "ARRAY",
+      items: {
+        type: "OBJECT",
+        properties: {
+          decision: { type: "STRING" },
+          reasoning: { type: "STRING" },
+          impact: { type: "STRING" },
+          affectedTeams: { type: "ARRAY", items: { type: "STRING" } },
+          priority: { type: "STRING", enum: ["high", "medium", "low"] },
+          confidenceLevel: { type: "STRING" }
+        },
+        required: ["decision", "reasoning", "impact", "affectedTeams", "priority", "confidenceLevel"]
+      }
+    },
+    actionItems: {
+      type: "ARRAY",
+      items: {
+        type: "OBJECT",
+        properties: {
+          task: { type: "STRING" },
+          owner: { type: "STRING" },
+          priority: { type: "STRING", enum: ["high", "medium", "low"] },
+          dependency: { type: "STRING" },
+          suggestedDeadline: { type: "STRING" },
+          status: { type: "STRING", enum: ["pending", "in-progress", "completed"] }
+        },
+        required: ["task", "owner", "priority", "dependency", "suggestedDeadline", "status"]
+      }
+    },
+    prd: {
+      type: "OBJECT",
+      properties: {
+        problemStatement: { type: "STRING" },
+        background: { type: "STRING" },
+        goals: { type: "ARRAY", items: { type: "STRING" } },
+        nonGoals: { type: "ARRAY", items: { type: "STRING" } },
+        targetUsers: { type: "ARRAY", items: { type: "STRING" } },
+        functionalRequirements: { type: "ARRAY", items: { type: "STRING" } },
+        nonFunctionalRequirements: { type: "ARRAY", items: { type: "STRING" } },
+        userStories: { type: "ARRAY", items: { type: "STRING" } },
+        acceptanceCriteria: { type: "ARRAY", items: { type: "STRING" } },
+        risks: { type: "ARRAY", items: { type: "STRING" } },
+        successMetrics: { type: "ARRAY", items: { type: "STRING" } },
+        futureScope: { type: "ARRAY", items: { type: "STRING" } }
+      },
+      required: [
+        "problemStatement", "background", "goals", "nonGoals", "targetUsers",
+        "functionalRequirements", "nonFunctionalRequirements", "userStories",
+        "acceptanceCriteria", "risks", "successMetrics", "futureScope"
+      ]
+    },
+    jiraStories: {
+      type: "ARRAY",
+      items: {
+        type: "OBJECT",
+        properties: {
+          epic: { type: "STRING" },
+          title: { type: "STRING" },
+          description: { type: "STRING" },
+          businessValue: { type: "STRING" },
+          priority: { type: "STRING", enum: ["high", "medium", "low"] },
+          storyPoints: { type: "INTEGER" },
+          acceptanceCriteria: { type: "ARRAY", items: { type: "STRING" } },
+          dependencies: { type: "ARRAY", items: { type: "STRING" } }
+        },
+        required: ["epic", "title", "description", "businessValue", "priority", "storyPoints", "acceptanceCriteria", "dependencies"]
+      }
+    },
+    executionReadiness: {
+      type: "OBJECT",
+      properties: {
+        overallReadinessScore: { type: "INTEGER" },
+        productClarityScore: { type: "INTEGER" },
+        engineeringReadinessScore: { type: "INTEGER" },
+        riskScore: { type: "INTEGER" },
+        missingInformation: { type: "ARRAY", items: { type: "STRING" } },
+        openQuestions: { type: "ARRAY", items: { type: "STRING" } },
+        criticalBlockers: { type: "ARRAY", items: { type: "STRING" } },
+        recommendations: { type: "ARRAY", items: { type: "STRING" } }
+      },
+      required: [
+        "overallReadinessScore", "productClarityScore", "engineeringReadinessScore", "riskScore",
+        "missingInformation", "openQuestions", "criticalBlockers", "recommendations"
+      ]
+    }
+  },
+  required: ["summary", "keyDecisions", "actionItems", "prd", "jiraStories", "executionReadiness"]
+};
+
 export const MeetingAnalysisSchema = z.object({
   summary: z.string(),
   decisions: z.array(DecisionSchema),

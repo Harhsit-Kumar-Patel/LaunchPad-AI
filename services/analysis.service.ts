@@ -1,15 +1,15 @@
-import { openai } from "../lib/openai";
+import { genAI } from "../lib/gemini";
 import { getSystemPrompt, getUserPrompt } from "../lib/prompts";
-import { AIServiceResponseSchema, MeetingAnalysis, Decision, ActionItem, JiraStory } from "../types/analysis";
+import { AIServiceResponseSchema, MeetingAnalysis, Decision, ActionItem, JiraStory, geminiResponseSchema } from "../types/analysis";
 
 /**
  * Service class responsible for coordinating transcript analysis operations.
  * Handles the AI request lifecycle, prompt building, structured data parsing,
- * validation, timeouts, and error classification.
+ * validation, timeouts, and error classification using Google Gemini.
  */
 export class AnalysisService {
   /**
-   * Analyzes a raw meeting transcript using OpenAI's structured JSON completions.
+   * Analyzes a raw meeting transcript using Google Gemini's structured JSON completions.
    * 
    * @param transcript The raw meeting text or transcript dialogue.
    * @param title An optional title describing the discussion context.
@@ -20,32 +20,42 @@ export class AnalysisService {
       throw new Error("Transcript content is required.");
     }
 
-    const model = process.env.OPENAI_MODEL || "gpt-4o-mini";
+    const modelName = process.env.GEMINI_MODEL || "gemini-1.5-flash";
     const requestTimeout = parseInt(process.env.AI_REQUEST_TIMEOUT_MS || "45000", 10);
 
     try {
-      const response = await openai.chat.completions.create(
-        {
-          model,
-          messages: [
-            { role: "system", content: getSystemPrompt() },
-            { role: "user", content: getUserPrompt(transcript, title) },
-          ],
-          response_format: { type: "json_object" },
-          temperature: 0.1, // Set low temperature to ensure schema compliance and reproducibility
-        },
-        {
-          timeout: requestTimeout,
+      // Get the Gemini generative model with structured JSON constraints
+      const model = genAI.getGenerativeModel({
+        model: modelName,
+        generationConfig: {
+          responseMimeType: "application/json",
+          responseSchema: geminiResponseSchema as any,
+          temperature: 0.1,
         }
-      );
+      });
 
-      const content = response.choices[0]?.message?.content;
+      const systemPrompt = getSystemPrompt();
+      const userPrompt = getUserPrompt(transcript, title);
+      
+      // Combine prompts logically for Gemini instruction context
+      const combinedPrompt = `${systemPrompt}\n\nMeeting to Analyze:\n${userPrompt}`;
+
+      // Call generation with manual promise race for custom timeout control
+      const generatePromise = model.generateContent(combinedPrompt);
+      const timeoutPromise = new Promise<never>((_, reject) => {
+        const error = new Error("APITimeoutError");
+        error.name = "APITimeoutError";
+        setTimeout(() => reject(error), requestTimeout);
+      });
+
+      const response = await Promise.race([generatePromise, timeoutPromise]);
+      const content = response.response?.text();
 
       if (!content) {
-        throw new Error("AI provider returned an empty or null response body.");
+        throw new Error("Gemini API returned an empty or null response body.");
       }
 
-      // Robustly clean possible Markdown JSON blocks
+      // Clean Markdown tags if any leak through
       let cleanContent = content.trim();
       if (cleanContent.startsWith("```")) {
         cleanContent = cleanContent.replace(/^```[a-zA-Z]*\n/, "");
@@ -60,7 +70,7 @@ export class AnalysisService {
         throw new Error(`Failed to parse AI response content as valid JSON: ${parseErr.message}\nRaw content: ${content}`);
       }
 
-      // Validate the parsed JSON matches our required structured subset
+      // Validate parsed JSON matches our required structured Zod subset
       const validation = AIServiceResponseSchema.safeParse(parsedJSON);
 
       if (!validation.success) {
@@ -216,13 +226,8 @@ export class AnalysisService {
       return fullAnalysis;
     } catch (error: any) {
       // Distinguish API timeout errors specifically
-      if (error.name === "APITimeoutError" || error.message?.includes("timeout")) {
+      if (error.name === "APITimeoutError" || error.message?.includes("timeout") || error.message?.includes("APITimeoutError")) {
         throw new Error(`AI Analysis request timed out after ${requestTimeout / 1000}s.`);
-      }
-
-      // Check for standard OpenAI API errors (holds status code, headers, etc.)
-      if (error.status) {
-        throw new Error(`OpenAI API request failed with status ${error.status}: ${error.message}`);
       }
 
       // Rethrow general or system errors
