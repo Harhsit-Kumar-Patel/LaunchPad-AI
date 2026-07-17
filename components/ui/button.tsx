@@ -14,7 +14,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         className={cn(
           "inline-flex items-center justify-center rounded-none font-bold uppercase tracking-widest text-[10px] sm:text-xs transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent disabled:pointer-events-none disabled:opacity-40 cursor-pointer",
           // Variants
-          variant === "primary" && "bg-primary text-primary-foreground border-2 border-primary hover:-translate-x-[2px] hover:-translate-y-[2px] hover:shadow-hard-sm active:translate-x-0 active:translate-y-0 shadow-none",
+          variant === "primary" && "bg-[#1A4BFF] text-white border-2 border-[#1A4BFF] hover:-translate-x-[2px] hover:-translate-y-[2px] hover:shadow-hard-sm active:translate-x-0 active:translate-y-0 shadow-none",
           variant === "secondary" && "bg-secondary text-foreground border-2 border-border-strong hover:-translate-x-[2px] hover:-translate-y-[2px] hover:shadow-hard-sm active:translate-x-0 active:translate-y-0",
           variant === "outline" && "border-2 border-border bg-transparent text-foreground hover:-translate-x-[2px] hover:-translate-y-[2px] hover:shadow-hard-sm active:translate-x-0 active:translate-y-0",
           variant === "ghost" && "hover:bg-muted/60 hover:text-foreground border-2 border-transparent",
