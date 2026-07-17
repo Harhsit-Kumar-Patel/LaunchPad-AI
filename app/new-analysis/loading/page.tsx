@@ -35,9 +35,17 @@ function LoadingContent() {
   React.useEffect(() => {
     let title = "";
     let transcript = "";
+    let pendingStr: string | null = null;
 
-    // 1. Try reading from sessionStorage first
-    const pendingStr = sessionStorage.getItem("copilot_pending_analysis");
+    // 1. Try reading from sessionStorage, fallback to localStorage
+    try {
+      if (typeof window !== "undefined") {
+        pendingStr = sessionStorage.getItem("copilot_pending_analysis") || localStorage.getItem("copilot_pending_analysis");
+      }
+    } catch (e) {
+      console.warn("Could not read from storage APIs:", e);
+    }
+
     if (pendingStr) {
       try {
         const parsed = JSON.parse(pendingStr);
@@ -46,8 +54,8 @@ function LoadingContent() {
         setPendingSpec({ title, transcript });
         setLoadingState("loading");
         return;
-      } catch {
-        // Fallback
+      } catch (err) {
+        console.error("Failed to parse pending analysis spec:", err);
       }
     }
 
@@ -65,8 +73,8 @@ function LoadingContent() {
             setLoadingState("loading");
             return;
           }
-        } catch {
-          // Fallback
+        } catch (err) {
+          console.error("Failed to load historical analyses lists:", err);
         }
       }
     }
@@ -116,8 +124,11 @@ function LoadingContent() {
         setAnalysisResult(result);
         setLoadingState("success");
         
-        // Clear pending spec out of session state
-        sessionStorage.removeItem("copilot_pending_analysis");
+        // Clear pending spec out of session and local state
+        try {
+          sessionStorage.removeItem("copilot_pending_analysis");
+          localStorage.removeItem("copilot_pending_analysis");
+        } catch (_) {}
 
         // Delay redirect to allow Success screen to display fully
         setTimeout(() => {

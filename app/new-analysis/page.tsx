@@ -12,11 +12,21 @@ export default function NewAnalysisPage() {
     // 1. Validate transcript content
     if (!transcript || transcript.trim() === "") return;
 
-    // 2. Set spec context inside sessionStorage to be processed on the Loading page
-    sessionStorage.setItem(
-      "copilot_pending_analysis",
-      JSON.stringify({ title, transcript })
-    );
+    // 2. Set spec context in storage (try sessionStorage, fallback to localStorage)
+    const payload = JSON.stringify({ title, transcript });
+    
+    try {
+      if (typeof window !== "undefined") {
+        sessionStorage.setItem("copilot_pending_analysis", payload);
+      }
+    } catch (e) {
+      console.warn("sessionStorage write failed, falling back to localStorage:", e);
+      try {
+        localStorage.setItem("copilot_pending_analysis", payload);
+      } catch (err) {
+        console.error("localStorage write failed as well:", err);
+      }
+    }
 
     // 3. Immediately redirect user to the Loading screen to cycle steps
     router.push("/new-analysis/loading");
