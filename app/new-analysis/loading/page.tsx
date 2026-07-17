@@ -31,6 +31,15 @@ function LoadingContent() {
   // Store transcript configuration locally for retries
   const [pendingSpec, setPendingSpec] = React.useState<{ title: string; transcript: string } | null>(null);
 
+  // Mounted ref to track component existence across hook cleanups securely
+  const isMountedRef = React.useRef(true);
+  React.useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
+
   // Initialize transcript data from sessionStorage or localStorage (regeneration)
   React.useEffect(() => {
     let title = "";
@@ -88,7 +97,6 @@ function LoadingContent() {
     if (loadingState !== "loading" || !pendingSpec) return;
 
     let progressTimer: NodeJS.Timeout;
-    let active = true;
 
     // Reset progress tracker
     setProgress(0);
@@ -116,7 +124,7 @@ function LoadingContent() {
       try {
         const result = await runAnalysis(pendingSpec!.title, pendingSpec!.transcript);
         
-        if (!active) return;
+        if (!isMountedRef.current) return;
         
         // Fast-forward progress to 100%
         clearInterval(progressTimer);
@@ -132,23 +140,23 @@ function LoadingContent() {
 
         // Delay redirect to allow Success screen to display fully
         setTimeout(() => {
-          if (active) {
+          if (isMountedRef.current) {
             router.push(`/results/${result.id}`);
           }
         }, 1800);
 
       } catch (err: any) {
-        if (!active) return;
+        if (!isMountedRef.current) return;
         clearInterval(progressTimer);
         
         // Handle common error states cleanly
         let friendlyError = err.message || "An unexpected network error occurred.";
         if (friendlyError.toLowerCase().includes("timeout")) {
-          friendlyError = "The analysis request timed out (OpenAI took too long to reply). Please retry.";
+          friendlyError = "The analysis request timed out (API took too long to reply). Please retry.";
         } else if (friendlyError.toLowerCase().includes("rate limit") || friendlyError.includes("429")) {
-          friendlyError = "OpenAI API rate limits exceeded. Please wait a few seconds and try again.";
+          friendlyError = "API rate limits exceeded. Please wait a few seconds and try again.";
         } else if (friendlyError.toLowerCase().includes("api key") || friendlyError.includes("401")) {
-          friendlyError = "Invalid OpenAI API Key. Please verify settings configuration.";
+          friendlyError = "Invalid API Key. Please verify settings configuration.";
         }
 
         setErrorMsg(friendlyError);
@@ -159,7 +167,6 @@ function LoadingContent() {
     executeCall();
 
     return () => {
-      active = false;
       clearInterval(progressTimer);
     };
   }, [loadingState, pendingSpec, router]);
