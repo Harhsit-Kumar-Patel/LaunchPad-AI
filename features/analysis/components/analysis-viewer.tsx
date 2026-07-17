@@ -16,7 +16,8 @@ import {
   Download,
   RotateCcw,
   Edit3,
-  Save
+  Save,
+  Printer
 } from "lucide-react";
 import { Analysis } from "@/types";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
@@ -246,6 +247,15 @@ ${currentAnalysis.readinessCheck.recommendations.map(r => `- ${r}`).join("\n")}
                 title="Export report as Markdown"
               >
                 <Download className="h-4 w-4" />
+              </button>
+
+              {/* Print/PDF */}
+              <button
+                onClick={() => window.print()}
+                className="h-8 w-8 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-white/5 border border-transparent hover:border-border transition-all cursor-pointer rounded-none"
+                title="Download report as PDF (Print)"
+              >
+                <Printer className="h-4 w-4" />
               </button>
 
               {/* Regenerate */}

@@ -192,3 +192,36 @@ body {
 .dark ::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.2);
 }
+
+@media print {
+  /* Hide non-printable layout wrappers and chrome */
+  header, 
+  nav, 
+  aside, 
+  button, 
+  .no-print, 
+  [role="tablist"],
+  .select-none {
+    display: none !important;
+  }
+  
+  body, 
+  main,
+  html {
+    background: #ffffff !important;
+    color: #000000 !important;
+    font-size: 12pt !important;
+    line-height: 1.5 !important;
+  }
+  
+  /* Reset panels for full page prints */
+  .border,
+  .bg-card,
+  .shadow-glow-violet {
+    border: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+}

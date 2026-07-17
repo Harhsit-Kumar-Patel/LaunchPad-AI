@@ -104,9 +104,12 @@ export function DecisionsView({ decisions, isEditing = false, onChange }: Decisi
                   <h4 className="text-sm font-bold text-foreground leading-snug">
                     {decision.title}
                   </h4>
-                  <p className="text-xs text-muted-foreground leading-relaxed font-medium">
-                    {decision.description}
-                  </p>
+                  <div className="space-y-1">
+                    <span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest font-mono block select-none">Rationale / Context</span>
+                    <p className="text-xs text-muted-foreground leading-relaxed font-medium">
+                      {decision.description}
+                    </p>
+                  </div>
                 </>
               )}
             </CardContent>

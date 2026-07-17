@@ -3,23 +3,29 @@
 import * as React from "react";
 import { useRouter } from "next/navigation";
 import { Sparkles } from "lucide-react";
-import { useAnalysis } from "@/hooks/use-analysis";
 import { TranscriptInput } from "@/features/analysis/components/transcript-input";
 
 export default function NewAnalysisPage() {
   const router = useRouter();
-  const { analyze, loading } = useAnalysis();
 
   const handleAnalyze = async (title: string, transcript: string) => {
-    const result = await analyze(title, transcript);
-    // Redirect to results loading page
-    router.push(`/new-analysis/loading?id=${result.id}`);
+    // 1. Validate transcript content
+    if (!transcript || transcript.trim() === "") return;
+
+    // 2. Set spec context inside sessionStorage to be processed on the Loading page
+    sessionStorage.setItem(
+      "copilot_pending_analysis",
+      JSON.stringify({ title, transcript })
+    );
+
+    // 3. Immediately redirect user to the Loading screen to cycle steps
+    router.push("/new-analysis/loading");
   };
 
   return (
-    <div className="space-y-8 max-w-6xl mx-auto">
+    <div className="space-y-8 max-w-6xl mx-auto font-sans">
       {/* Page Header */}
-      <div className="border-b-2 border-border pb-5 select-none">
+      <div className="border-b border-border pb-5 select-none">
         <h1 className="text-xl sm:text-2xl font-black tracking-tight text-foreground flex items-center gap-2 uppercase">
           <Sparkles className="h-5 w-5 text-accent" /> New Analysis
         </h1>
@@ -29,7 +35,7 @@ export default function NewAnalysisPage() {
       </div>
 
       {/* Main input workspace form */}
-      <TranscriptInput onAnalyze={handleAnalyze} loading={loading} />
+      <TranscriptInput onAnalyze={handleAnalyze} loading={false} />
     </div>
   );
 }

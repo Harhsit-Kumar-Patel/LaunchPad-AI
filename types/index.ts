@@ -22,6 +22,7 @@ export interface PRD {
   userStories: string[];
   functionalRequirements: string[];
   outOfScope: string[];
+  successMetrics?: string[];
 }
 
 export interface JiraStory {
